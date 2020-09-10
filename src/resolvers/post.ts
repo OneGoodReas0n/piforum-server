@@ -123,7 +123,6 @@ export default class PostResolver {
     } else if (vote.value !== value) {
       vote.value = value;
       Vote.save(vote);
-<<<<<<< HEAD
     } else {
       return false;
     }
@@ -131,13 +130,6 @@ export default class PostResolver {
       { id: postId },
       { points: post!.points + (vote?.value ? 2 * realValue : realValue)  }
     );
-=======
-      await Post.update(
-        { id: postId },
-        { points: post!.points + 2 * realValue }
-      );
-    }
->>>>>>> bf9058ec8d4195bbd04e06569bad7d1d02d1652d
     return true;
   }
 

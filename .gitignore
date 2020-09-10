@@ -1,8 +1,6 @@
 node_modules
 dist
-<<<<<<< HEAD
 yarn-error.log
 .env
-=======
-yarn-error.log
->>>>>>> bf9058ec8d4195bbd04e06569bad7d1d02d1652d
+.env.example
+.env.production
