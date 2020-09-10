@@ -53,7 +53,10 @@ export default class UserResolver {
 
   @Query(() => User, { nullable: true })
   async me(@Ctx() { req }: Context) {
+<<<<<<< HEAD
     console.log(req.session.userId);
+=======
+>>>>>>> bf9058ec8d4195bbd04e06569bad7d1d02d1652d
     if (!req.session.userId) {
       return null;
     }
@@ -210,8 +213,14 @@ export default class UserResolver {
         ],
       };
     }
+<<<<<<< HEAD
     req.session.userId = user.id;
     
+=======
+
+    req.session.userId = user.id;
+
+>>>>>>> bf9058ec8d4195bbd04e06569bad7d1d02d1652d
     return {
       user,
     };
