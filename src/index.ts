@@ -26,11 +26,19 @@ const PORT = process.env.PORT;
   const conn = await createConnection({
     type: "postgres",
     url: process.env.DATABASE_URL,
+<<<<<<< HEAD
     logging: true, 
     entities: [User ,Post, Vote],
     migrations: [path.join(__dirname, "./migrations/*")],
   });
   
+=======
+    logging: true,
+    entities: [User, Post, Vote],
+    migrations: [path.join(__dirname, "./migrations/*")],
+  });
+
+>>>>>>> 3cd572625f6a5e333ac23ecd39206bda4e25aa58
   // await conn.runMigrations();
 
   const app = express();
@@ -41,7 +49,10 @@ const PORT = process.env.PORT;
   // app.set("trust proxy", 1);
 
   app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
+<<<<<<< HEAD
 
+=======
+>>>>>>> 3cd572625f6a5e333ac23ecd39206bda4e25aa58
 
   app.use(
     session({
@@ -52,7 +63,11 @@ const PORT = process.env.PORT;
         httpOnly: true,
         secure: __prod__, //cookie only works in http
         sameSite: "lax",
+<<<<<<< HEAD
         // domain: __prod__ ? 'piforum.xyz' : ''
+=======
+        domain: __prod__ ? "piforum.xyz" : "",
+>>>>>>> 3cd572625f6a5e333ac23ecd39206bda4e25aa58
       },
       saveUninitialized: false,
       secret: process.env.SESSION_SECRET,

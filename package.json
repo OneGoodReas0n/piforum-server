@@ -1,5 +1,5 @@
 {
-  "name": "reason-shop",
+  "name": "piforum",
   "version": "1.0.0",
   "main": "index.js",
   "author": "Reason",
@@ -38,6 +38,7 @@
     "dataloader": "^2.0.0",
     "docker": "^1.0.0",
     "dotenv-safe": "^8.2.0",
+    "dotenv-save": "^1.2.0",
     "gen-env-types": "^1.0.3",
     "ioredis": "^4.17.3",
     "nodemailer": "^6.4.11",
