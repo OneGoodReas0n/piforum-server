@@ -1,4 +1,5 @@
 import argon from "argon2";
+import { isAuth } from "../middleware/isAuth";
 import {
   Arg,
   Ctx,
@@ -9,6 +10,7 @@ import {
   Resolver,
   Root,
   FieldResolver,
+  UseMiddleware,
 } from "type-graphql";
 import { v4 } from "uuid";
 import { COOKIE_NAME, FORGET_PASSWORD_PREFIX } from "../consts";
@@ -16,7 +18,9 @@ import User from "../entities/User";
 import { Context } from "../types";
 import { sendEmail } from "../utils/sendEmail";
 import { validateRegister } from "../utils/validateRegister";
-import { UsernamePasswordInput } from "./UsernamePasswordInput";
+import { UsernamePasswordInput } from "./types/UsernamePasswordInput";
+import Avatar from "../entities/Avatar";
+import { UserChangeFieldsInput } from "./types/UserChangeFieldsInput";
 
 @ObjectType()
 export class FieldError {
@@ -43,6 +47,15 @@ export default class UserResolver {
     } else {
       return "";
     }
+  }
+
+  @FieldResolver(() => Avatar, { nullable: true })
+  async avatar(@Root() user: User): Promise<Avatar | null> {
+    const avatar = await Avatar.findOne({ where: { id: user.avatarId } });
+    if (!avatar) {
+      return null;
+    }
+    return avatar;
   }
 
   @Query(() => [User], { nullable: true })
@@ -218,6 +231,60 @@ export default class UserResolver {
 
   @Mutation(() => Boolean)
   async logout(@Ctx() { res, req }: Context): Promise<Boolean> {
+    return new Promise((resolve) =>
+      req.session.destroy((err) => {
+        res.clearCookie(COOKIE_NAME);
+        if (err) {
+          resolve(false);
+          return;
+        }
+        resolve(true);
+      })
+    );
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async updateUser(
+    @Arg("options") { bio, publicLink, username }: UserChangeFieldsInput,
+    @Ctx() { req }: Context
+  ): Promise<Boolean> {
+    if (!req.session.userId) {
+      return false;
+    }
+    let avatar = null;
+    const user = await User.findOne(req.session.userId);
+    if (!user?.avatarId && publicLink) {
+      avatar = await Avatar.create({
+        publicLink,
+      }).save();
+      await User.update(
+        { id: req.session.userId },
+        {
+          username,
+          description: bio,
+          avatarId: avatar.id,
+        }
+      );
+    } else {
+      avatar = await Avatar.findOne(user?.avatarId);
+      if (avatar?.publicLink !== publicLink) {
+        await Avatar.update({ id: user?.avatarId }, { publicLink });
+      }
+      await User.update(
+        { id: req.session.userId },
+        {
+          username,
+          description: bio,
+        }
+      );
+    }
+    return true;
+  }
+
+  @Mutation(() => Boolean)
+  async deleteMe(@Ctx() { res, req }: Context): Promise<Boolean> {
+    await User.delete(req.session.userId);
     return new Promise((resolve) =>
       req.session.destroy((err) => {
         res.clearCookie(COOKIE_NAME);

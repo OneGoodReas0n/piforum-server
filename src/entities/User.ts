@@ -7,7 +7,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   OneToMany,
+  OneToOne,
 } from "typeorm";
+import Avatar from "./Avatar";
 import Post from "./Post";
 import Vote from "./Vote";
 
@@ -37,9 +39,20 @@ export default class User extends BaseEntity {
   @Column()
   password!: string;
 
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
+  description!: string;
+
   @OneToMany(() => Post, (post: Post) => post.creator)
   posts: Post[];
 
   @OneToMany(() => Vote, (vote) => vote.user)
   votes: Vote[];
+
+  @Field(() => Int, { nullable: true, defaultValue: null })
+  @Column({ nullable: true, default: null })
+  avatarId: number;
+
+  @OneToOne(() => Avatar, (avatar) => avatar.user, { nullable: true })
+  avatar: Avatar;
 }

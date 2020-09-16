@@ -13,9 +13,9 @@ import { COOKIE_NAME, __prod__ } from "./consts";
 import Post from "./entities/Post";
 import User from "./entities/User";
 import Vote from "./entities/Vote";
+import Avatar from "./entities/Avatar";
 import PostResolver from "./resolvers/post";
 import UserResolver from "./resolvers/user";
-import VoteResolver from "./resolvers/vote";
 import { Context } from "./types";
 import { createUserLoader } from "./utils/createUserLoader";
 import { createVoteLoader } from "./utils/createVoteLoader";
@@ -27,11 +27,12 @@ const PORT = process.env.PORT;
     type: "postgres",
     url: process.env.DATABASE_URL,
     logging: true,
-    entities: [User, Post, Vote],
+    entities: [User, Post, Vote, Avatar],
     migrations: [path.join(__dirname, "./migrations/*")],
   });
 
   // await conn.runMigrations();
+  // await conn.undoLastMigration();
 
   const app = express();
 
@@ -61,7 +62,7 @@ const PORT = process.env.PORT;
 
   const apoloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [PostResolver, UserResolver, VoteResolver],
+      resolvers: [PostResolver, UserResolver],
       validate: false,
     }),
     context: ({ req, res }: Context): Context => ({
